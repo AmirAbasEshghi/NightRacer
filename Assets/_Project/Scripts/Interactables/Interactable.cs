@@ -9,6 +9,7 @@ namespace NightRacer.Interactables
         public static event Action<Interactable, Vector3> OnPickupCollected;
 
         public bool IsUsed { get; protected set; }
+        public int PoolIndex { get; set; }
 
         public virtual void Interact(PlayerStats stats, PlayerFuel fuel)
         {

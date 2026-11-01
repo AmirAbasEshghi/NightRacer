@@ -9,8 +9,8 @@ namespace NightRacer.Interactables
     {
         [SerializeField] private RoadSettings roadSettings;
         [SerializeField] private Transform player;
-        [SerializeField] private Interactable staticCarPrefab;
-        [SerializeField] private Interactable movingCarPrefab;
+        [SerializeField] private Interactable[] staticCarPrefabs;
+        [SerializeField] private Interactable[] movingCarPrefabs;
         [SerializeField] private Interactable coinPrefab;
         [SerializeField] private Interactable fuelCanPrefab;
 
@@ -32,8 +32,8 @@ namespace NightRacer.Interactables
         [SerializeField] private float fuelDistanceMin = 200f;
         [SerializeField] private float fuelDistanceMax = 320f;
 
-        private Pool<Interactable> staticCarPool;
-        private Pool<Interactable> movingCarPool;
+        private Pool<Interactable>[] staticCarPools;
+        private Pool<Interactable>[] movingCarPools;
         private Pool<Interactable> coinPool;
         private Pool<Interactable> fuelCanPool;
 
@@ -62,8 +62,26 @@ namespace NightRacer.Interactables
 
         private void Awake()
         {
-            staticCarPool = new Pool<Interactable>(staticCarPrefab, transform, staticCarCount);
-            movingCarPool = new Pool<Interactable>(movingCarPrefab, transform, movingCarCount);
+            if (staticCarPrefabs != null && staticCarPrefabs.Length > 0)
+            {
+                staticCarPools = new Pool<Interactable>[staticCarPrefabs.Length];
+                int perPool = Mathf.Max(2, Mathf.CeilToInt((float)staticCarCount / staticCarPrefabs.Length) + 1);
+                for (int i = 0; i < staticCarPrefabs.Length; i++)
+                {
+                    staticCarPools[i] = new Pool<Interactable>(staticCarPrefabs[i], transform, perPool);
+                }
+            }
+
+            if (movingCarPrefabs != null && movingCarPrefabs.Length > 0)
+            {
+                movingCarPools = new Pool<Interactable>[movingCarPrefabs.Length];
+                int perPool = Mathf.Max(2, Mathf.CeilToInt((float)movingCarCount / movingCarPrefabs.Length) + 1);
+                for (int i = 0; i < movingCarPrefabs.Length; i++)
+                {
+                    movingCarPools[i] = new Pool<Interactable>(movingCarPrefabs[i], transform, perPool);
+                }
+            }
+
             coinPool = new Pool<Interactable>(coinPrefab, transform, coinCount);
             fuelCanPool = new Pool<Interactable>(fuelCanPrefab, transform, fuelCanCount);
 
@@ -168,7 +186,7 @@ namespace NightRacer.Interactables
                     {
                         if (Random.value < obstacleChance * movingCarChance)
                         {
-                            SpawnItem(movingCarPool, movingCarPrefab, lane, rowZ);
+                            SpawnRandomObstacle(movingCarPools, movingCarPrefabs, lane, rowZ);
                             currentMoving[lane] = true;
                         }
                     }
@@ -178,12 +196,12 @@ namespace NightRacer.Interactables
                         {
                             if (Random.value < movingCarChance)
                             {
-                                SpawnItem(movingCarPool, movingCarPrefab, lane, rowZ);
+                                SpawnRandomObstacle(movingCarPools, movingCarPrefabs, lane, rowZ);
                                 currentMoving[lane] = true;
                             }
                             else
                             {
-                                SpawnItem(staticCarPool, staticCarPrefab, lane, rowZ);
+                                SpawnRandomObstacle(staticCarPools, staticCarPrefabs, lane, rowZ);
                             }
                         }
                     }
@@ -196,6 +214,33 @@ namespace NightRacer.Interactables
             for (int i = 0; i < currentMoving.Length; i++)
             {
                 currentMoving[i] = false;
+            }
+        }
+
+        private void SpawnRandomObstacle(Pool<Interactable>[] pools, Interactable[] prefabs, int lane, float z)
+        {
+            if (pools == null || prefabs == null || pools.Length == 0 || prefabs.Length == 0)
+            {
+                return;
+            }
+
+            int index = Random.Range(0, pools.Length);
+            Pool<Interactable> pool = pools[index];
+            Interactable prefab = prefabs[index];
+            if (pool == null || prefab == null)
+            {
+                return;
+            }
+
+            float x = roadSettings.GetLaneX(lane);
+            float y = prefab.transform.position.y;
+            Vector3 pos = new Vector3(x, y, z);
+
+            Interactable item = pool.Get(pos, prefab.transform.rotation);
+            if (item != null)
+            {
+                item.PoolIndex = index;
+                activeItems.Add(item);
             }
         }
 
@@ -221,19 +266,31 @@ namespace NightRacer.Interactables
         {
             if (item is StaticCar)
             {
-                staticCarPool.Release(item);
+                if (staticCarPools != null && item.PoolIndex >= 0 && item.PoolIndex < staticCarPools.Length)
+                {
+                    staticCarPools[item.PoolIndex].Release(item);
+                }
             }
             else if (item is MovingCar)
             {
-                movingCarPool.Release(item);
+                if (movingCarPools != null && item.PoolIndex >= 0 && item.PoolIndex < movingCarPools.Length)
+                {
+                    movingCarPools[item.PoolIndex].Release(item);
+                }
             }
             else if (item is Coin)
             {
-                coinPool.Release(item);
+                if (coinPool != null)
+                {
+                    coinPool.Release(item);
+                }
             }
             else if (item is FuelCan)
             {
-                fuelCanPool.Release(item);
+                if (fuelCanPool != null)
+                {
+                    fuelCanPool.Release(item);
+                }
             }
         }
     }

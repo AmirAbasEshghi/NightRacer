@@ -39491,8 +39491,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NightRacer.Interactables.InteractableSpawner
   roadSettings: {fileID: 11400000, guid: e670509081116c04b8dc1b981139147d, type: 2}
   player: {fileID: 213189332}
-  staticCarPrefab: {fileID: 4729109693583292785, guid: 04ff79e2d2d059a45aa8628e82f5f91e, type: 3}
-  movingCarPrefab: {fileID: 3492757110138913980, guid: 3891a82d95ee08a40a88fc2267ddb64a, type: 3}
+  staticCarPrefabs:
+  - {fileID: 4729109693583292785, guid: 04ff79e2d2d059a45aa8628e82f5f91e, type: 3}
+  - {fileID: 4138008713240305053, guid: bed782d91c5fd744080e6b7522c1a493, type: 3}
+  - {fileID: 3102605591570795365, guid: 9b9febf60f236fc4fa5a6b527a8244dd, type: 3}
+  - {fileID: 7958418716593745543, guid: 7df55e1994971594084657a22291a6a1, type: 3}
+  movingCarPrefabs:
+  - {fileID: 3492757110138913980, guid: 3891a82d95ee08a40a88fc2267ddb64a, type: 3}
+  - {fileID: 5758142983467921043, guid: 52dadf7bdbe92f546b5fdfda4d1edd38, type: 3}
+  - {fileID: 5895723895141625594, guid: 6b54995f000428f43b00fd8414a596f3, type: 3}
+  - {fileID: 6030349812328939136, guid: 0da418b7e8898bc49bd7c021711fa739, type: 3}
   coinPrefab: {fileID: 6193524246814990412, guid: 99f350ee22030f04a9c68284f5ae8886, type: 3}
   fuelCanPrefab: {fileID: 6596454462935743077, guid: 2883444f52783564cb4ecec1b58c9028, type: 3}
   staticCarCount: 10
