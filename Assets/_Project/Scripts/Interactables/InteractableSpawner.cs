@@ -39,6 +39,9 @@ namespace NightRacer.Interactables
 
         private List<Interactable> activeItems;
 
+        private bool[] previousMoving;
+        private bool[] currentMoving;
+
         private float rowSpacing;
         private float obstacleChance;
         private float nextRowZ;
@@ -65,6 +68,10 @@ namespace NightRacer.Interactables
             fuelCanPool = new Pool<Interactable>(fuelCanPrefab, transform, fuelCanCount);
 
             activeItems = new List<Interactable>(staticCarCount + movingCarCount + coinCount + fuelCanCount);
+
+            int lanes = roadSettings != null ? roadSettings.LaneCount : 3;
+            previousMoving = new bool[lanes];
+            currentMoving = new bool[lanes];
 
             rowSpacing = startRowSpacing;
             obstacleChance = startObstacleChance;
@@ -108,8 +115,33 @@ namespace NightRacer.Interactables
 
         private void SpawnRow(float rowZ)
         {
-            int offset = Random.Range(-1, 2);
-            int safeLane = Mathf.Clamp(lastSafeLane + offset, 0, roadSettings.LaneCount - 1);
+            int minLane = Mathf.Max(0, lastSafeLane - 1);
+            int maxLane = Mathf.Min(roadSettings.LaneCount - 1, lastSafeLane + 1);
+
+            int validCount = 0;
+            for (int l = minLane; l <= maxLane; l++)
+            {
+                if (!previousMoving[l])
+                {
+                    validCount++;
+                }
+            }
+
+            int chosenIndex = Random.Range(0, validCount);
+            int safeLane = lastSafeLane;
+            int counter = 0;
+            for (int l = minLane; l <= maxLane; l++)
+            {
+                if (!previousMoving[l])
+                {
+                    if (counter == chosenIndex)
+                    {
+                        safeLane = l;
+                        break;
+                    }
+                    counter++;
+                }
+            }
             lastSafeLane = safeLane;
 
             for (int lane = 0; lane < roadSettings.LaneCount; lane++)
@@ -132,18 +164,38 @@ namespace NightRacer.Interactables
                 }
                 else
                 {
-                    if (Random.value < obstacleChance)
+                    if (previousMoving[lane])
                     {
-                        if (Random.value < movingCarChance)
+                        if (Random.value < obstacleChance * movingCarChance)
                         {
                             SpawnItem(movingCarPool, movingCarPrefab, lane, rowZ);
+                            currentMoving[lane] = true;
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (Random.value < obstacleChance)
                         {
-                            SpawnItem(staticCarPool, staticCarPrefab, lane, rowZ);
+                            if (Random.value < movingCarChance)
+                            {
+                                SpawnItem(movingCarPool, movingCarPrefab, lane, rowZ);
+                                currentMoving[lane] = true;
+                            }
+                            else
+                            {
+                                SpawnItem(staticCarPool, staticCarPrefab, lane, rowZ);
+                            }
                         }
                     }
                 }
+            }
+
+            bool[] temp = previousMoving;
+            previousMoving = currentMoving;
+            currentMoving = temp;
+            for (int i = 0; i < currentMoving.Length; i++)
+            {
+                currentMoving[i] = false;
             }
         }
 
@@ -186,4 +238,3 @@ namespace NightRacer.Interactables
         }
     }
 }
-
