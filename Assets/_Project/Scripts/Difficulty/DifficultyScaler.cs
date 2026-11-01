@@ -11,13 +11,45 @@ namespace NightRacer.Difficulty
         [SerializeField] private InteractableSpawner spawner;
 
         [SerializeField] private float distanceToMax = 3000f;
-        [SerializeField] private float maxSpeed = 40f;
+        [SerializeField] private float maxSpeed = 60f;
         [SerializeField] private float endRowSpacing = 35f;
         [SerializeField] private float endObstacleChance = 0.7f;
+        [SerializeField] private float hitSlowdown = 5f;
 
+        private PlayerStats stats;
         private float startSpeed;
         private float startRowSpacing;
         private float startObstacleChance;
+        private float speedPenalty;
+
+        private void Awake()
+        {
+            if (movement != null)
+            {
+                stats = movement.GetComponent<PlayerStats>();
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (stats == null && movement != null)
+            {
+                stats = movement.GetComponent<PlayerStats>();
+            }
+
+            if (stats != null)
+            {
+                stats.OnHit += HandleHit;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (stats != null)
+            {
+                stats.OnHit -= HandleHit;
+            }
+        }
 
         private void Start()
         {
@@ -44,7 +76,8 @@ namespace NightRacer.Difficulty
 
             if (movement != null)
             {
-                movement.Speed = Mathf.Lerp(startSpeed, maxSpeed, t);
+                float lerpedSpeed = Mathf.Lerp(startSpeed, maxSpeed, t);
+                movement.Speed = Mathf.Max(startSpeed, lerpedSpeed - speedPenalty);
             }
 
             if (spawner != null)
@@ -53,6 +86,18 @@ namespace NightRacer.Difficulty
                 spawner.ObstacleChance = Mathf.Lerp(startObstacleChance, endObstacleChance, t);
             }
         }
+
+        private void HandleHit()
+        {
+            if (movement == null)
+            {
+                return;
+            }
+
+            float excess = Mathf.Max(0f, movement.Speed - startSpeed);
+            float reduction = Mathf.Min(hitSlowdown, excess);
+            speedPenalty += reduction;
+            movement.Speed = Mathf.Max(startSpeed, movement.Speed - reduction);
+        }
     }
 }
-

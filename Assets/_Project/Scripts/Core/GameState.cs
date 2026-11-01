@@ -5,7 +5,7 @@ namespace NightRacer.Core
         Menu,
         Playing,
         Paused,
-        GameOver
+        GameOver,
+        Resuming
     }
 }
-

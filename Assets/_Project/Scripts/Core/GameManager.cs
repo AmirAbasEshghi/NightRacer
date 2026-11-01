@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using NightRacer.PlayerInput;
@@ -13,13 +14,19 @@ namespace NightRacer.Core
         [SerializeField] private string menuSceneName = "MainMenu";
         [SerializeField] private string gameSceneName = "Game";
         [SerializeField] private InputReader inputReader;
+        [SerializeField] private int countdownSeconds = 3;
 
         public GameState State { get; private set; }
         public event Action<GameState> OnStateChanged;
+        public event Action<int> OnCountdownTick;
+
+        private WaitForSecondsRealtime waitOneSecond;
+        private Coroutine resumeCoroutine;
 
         private void Awake()
         {
             Instance = this;
+            waitOneSecond = new WaitForSecondsRealtime(1f);
         }
 
         private void OnEnable()
@@ -50,6 +57,12 @@ namespace NightRacer.Core
                 Instance = null;
             }
 
+            if (resumeCoroutine != null)
+            {
+                StopAllCoroutines();
+                resumeCoroutine = null;
+            }
+
             Time.timeScale = 1f;
         }
 
@@ -70,10 +83,12 @@ namespace NightRacer.Core
 
         public void Resume()
         {
-            if (State == GameState.Paused)
+            if (State != GameState.Paused || resumeCoroutine != null)
             {
-                SetState(GameState.Playing);
+                return;
             }
+
+            resumeCoroutine = StartCoroutine(ResumeCountdownRoutine());
         }
 
         public void TogglePause()
@@ -124,6 +139,18 @@ namespace NightRacer.Core
                 Time.timeScale = 0f;
             }
         }
+
+        private IEnumerator ResumeCountdownRoutine()
+        {
+            SetState(GameState.Resuming);
+            for (int i = countdownSeconds; i >= 1; i--)
+            {
+                OnCountdownTick?.Invoke(i);
+                yield return waitOneSecond;
+            }
+
+            resumeCoroutine = null;
+            SetState(GameState.Playing);
+        }
     }
 }
-
