@@ -221,6 +221,9 @@ GameObject:
   - component: {fileID: 213189335}
   - component: {fileID: 213189334}
   - component: {fileID: 213189333}
+  - component: {fileID: 213189338}
+  - component: {fileID: 213189337}
+  - component: {fileID: 213189336}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -308,6 +311,47 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &213189336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 213189331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be1d9fd92e352df44bb217ed3bfc33a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NightRacer.Player.PlayerCollision
+  stats: {fileID: 213189338}
+  fuel: {fileID: 213189337}
+--- !u!114 &213189337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 213189331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8d84042a6ea7fd4588aea30b040aa16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NightRacer.Player.PlayerFuel
+  maxFuel: 100
+  drainPerSecond: 2
+--- !u!114 &213189338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 213189331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 189d255255dc2fa429df9cbb484b4317, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NightRacer.Player.PlayerStats
+  maxLives: 3
 --- !u!1 &438556465
 GameObject:
   m_ObjectHideFlags: 0
@@ -762,6 +806,72 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1 &2125807045
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2125807047}
+  - component: {fileID: 2125807046}
+  m_Layer: 0
+  m_Name: InteractableSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2125807046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125807045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecdf9df55d6519469921406af9fac6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NightRacer.Interactables.InteractableSpawner
+  roadSettings: {fileID: 11400000, guid: e670509081116c04b8dc1b981139147d, type: 2}
+  player: {fileID: 213189332}
+  staticCarPrefab: {fileID: 4729109693583292785, guid: 04ff79e2d2d059a45aa8628e82f5f91e, type: 3}
+  movingCarPrefab: {fileID: 3492757110138913980, guid: 3891a82d95ee08a40a88fc2267ddb64a, type: 3}
+  coinPrefab: {fileID: 6193524246814990412, guid: 99f350ee22030f04a9c68284f5ae8886, type: 3}
+  fuelCanPrefab: {fileID: 6596454462935743077, guid: 2883444f52783564cb4ecec1b58c9028, type: 3}
+  staticCarCount: 10
+  movingCarCount: 8
+  coinCount: 18
+  fuelCanCount: 4
+  spawnDistance: 100
+  firstRowDistance: 60
+  releaseDistance: 15
+  startRowSpacing: 45
+  minRowSpacing: 35
+  startObstacleChance: 0.4
+  movingCarChance: 0.35
+  coinChance: 0.5
+  coinsPerRow: 3
+  coinSpacing: 4
+  fuelDistanceMin: 200
+  fuelDistanceMax: 320
+--- !u!4 &2125807047
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125807045}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -772,3 +882,4 @@ SceneRoots:
   - {fileID: 213189332}
   - {fileID: 1017286145}
   - {fileID: 1073661640}
+  - {fileID: 2125807047}
