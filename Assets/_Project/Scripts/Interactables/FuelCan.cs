@@ -14,7 +14,7 @@ namespace NightRacer.Interactables
             {
                 fuel.Refill(amount);
             }
+            NotifyPickupCollected();
         }
     }
 }
-

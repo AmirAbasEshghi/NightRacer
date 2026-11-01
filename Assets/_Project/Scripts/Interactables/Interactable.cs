@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using NightRacer.Player;
 
@@ -5,6 +6,8 @@ namespace NightRacer.Interactables
 {
     public abstract class Interactable : MonoBehaviour
     {
+        public static event Action<Interactable, Vector3> OnPickupCollected;
+
         public bool IsUsed { get; protected set; }
 
         public virtual void Interact(PlayerStats stats, PlayerFuel fuel)
@@ -16,6 +19,10 @@ namespace NightRacer.Interactables
         {
             IsUsed = false;
         }
+
+        protected void NotifyPickupCollected()
+        {
+            OnPickupCollected?.Invoke(this, transform.position);
+        }
     }
 }
-

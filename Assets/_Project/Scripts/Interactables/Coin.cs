@@ -14,7 +14,7 @@ namespace NightRacer.Interactables
             {
                 stats.AddCoin(value);
             }
+            NotifyPickupCollected();
         }
     }
 }
-
